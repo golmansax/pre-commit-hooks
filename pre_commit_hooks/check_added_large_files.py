@@ -9,12 +9,22 @@ import os
 import sys
 
 from pre_commit_hooks.util import added_files
+from pre_commit_hooks.util import CalledProcessError
+from pre_commit_hooks.util import cmd_output
+
+
+def lfs_files():
+    try:  # pragma: no cover (no git-lfs)
+        lines = cmd_output('git', 'lfs', 'status', '--porcelain').splitlines()
+        return set(line[3:].rpartition(' ')[0] for line in lines)
+    except CalledProcessError:
+        return set()
 
 
 def find_large_added_files(filenames, maxkb):
     # Find all added files that are also in the list of files pre-commit tells
     # us about
-    filenames = added_files() & set(filenames)
+    filenames = (added_files() & set(filenames)) - lfs_files()
 
     retv = 0
     for filename in filenames:
