@@ -30,6 +30,7 @@ setup(
         'flake8',
         'argparse',
         'autopep8>=1.1',
+        'pep8<1.6',
         'pyyaml',
         'simplejson',
         'six',
